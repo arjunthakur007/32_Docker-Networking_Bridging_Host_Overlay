@@ -1,0 +1,49 @@
+#Docker-Networking (Bridge v/s Host v/s Overlay)
+
+###Content
+~What is Docker Networking?
+~Docker Networking v/s VM Networking
+~How containers talks to host in terms of nerworking?
+~Docker Networking Practicle
+
+
+##What is Docker Networking?
+>Allows Containers to communicate with each other and the host system.
+ e.g. frontend container has to talk to the backned container.
+
+##Docker Networking v/s VM Networking
+>VM has its own O.S. and our App. So each O.S. is isolated from each other.
+ We can connect a subnet to each of these O.S. seperately and they will get 
+ their own IP address. 
+
+>The Docker container shares the host OS's kernel. Its network interface is 
+ just a way to isolate its process from others. The container IPs are only 
+ known on the host machine's internal Docker network. When you want to expose 
+ a port, you are directly telling the host OS: "Take traffic coming to my 
+ public port, and route it instantly to the container's internal port."
+
+##How containers talks to host in terms of nerworking?
+>Bridge Networking: 
+ Docker uses a special virtual bridge network (often called docker0 or a 
+ vEth). When a container starts Docker creates a virtual ether network
+ to create link between App and Host(eth0) network (both on different subnets). This 
+ network is internal to the host. 
+ Bridge network is the default Docker Network.
+
+>Host Networking:
+ Containers will directly use the eth0 network of the Host. 
+ However this has security issues like No Firewall Separation, Access to 
+ all Interfaces, No Port Mapping, Hardcoded Ports etc.
+
+>Overlay Networking:
+ Too complicated for now, will be covered later.
+
+##Docker Networking Practicle
+>Refer to : Docker-Networking-Practicle.txt 
+
+
+ 
+
+
+
+

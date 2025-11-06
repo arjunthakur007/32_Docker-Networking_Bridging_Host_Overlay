@@ -1,0 +1,144 @@
+#This file contains the step by step process to make conatiners Docker and Connect them
+ via Bridge Networking & Host Networking.
+
+###Contants
+~Pinging one container via another conatiner through bridge networking
+~Making a secure Bridge network, which can not be accessed by other containers.
+
+
+##Pinging one container via another conatiner through bridge networking
+------------------------------------------------------------------------------------------------------------------------ 
+>Prerequisits:
+ Open 2 bash terminals.
+ Make sure to have this repo on your local machine: https://github.com/iam-veeramalla/Docker-Zero-to-Hero#
+ Naviagte to the /examples directory in both of your bash terminals.
+ Make sure you have your docker desktop installed and running.
+
+------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------
+>Making a container named login
+ docker run -d --name login nginx:latest
+ (This command will create a docker container in detached mode with the name of login &
+  will use nginx as the base image)
+
+ Check if the container is built:
+ docker ps 
+ 
+ Check the IP adress
+ Docker inspect login 
+ (find the IPAddress)
+------------------------------------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------------------------------------
+>Loggging in into the container
+ docker exec -it login /bin/bash 
+             or
+ docker exec -it login bin/bash
+ (This command executes the /bin/bash shell inside the running container (e.g., login) 
+  to open an interactive terminal session (-it) for inspection and management.)
+
+------------------------------------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------------------------------------
+>Install the basic requirements into the container
+ apt update 
+ (Update the package list)
+
+------------------------------------------------------------------------------------------------------------------------
+
+
+------------------------------------------------------------------------------------------------------------------------
+>Install ping
+ apt-get install install iputils-ping -y
+ (This command uses the Advanced Package Tool (apt-get) to install the network utility 
+  iputils-ping non-interactively (-y).)
+
+ Check if ping is working:
+ ping -V
+------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------
+>Make a container named logout (on the second terminal)
+ docker run -d --name logout nginx:latest
+ 
+ Check if its built:
+ docker ps
+
+ Check the IP adress
+ Docker inspect logout 
+ (find the IPAddress)
+------------------------------------------------------------------------------------------------------------------------
+
+------------------------------------------------------------------------------------------------------------------------
+[Both of the containers will have the IPAddress ion the same subnet and their Networks tab
+ will say brdige (all of this info can be acquired through `Docker inspect <container_name>`
+ command )]
+--------------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------------
+>Pinging the logout container through the login container
+ ping <IPAddesss of the logout conatiner>
+
+ [
+    In essence, it answers two crucial questions:
+    Is the destination alive and reachable?
+    How long does it take for a packet to travel there and back?
+    ]
+
+ Both of these container are using the default out of the box bridge networking which 
+ allows one container to talk to another container. 
+-----------------------------------------------------------------------------------------------------------------------
+
+##Making a secure Bridge network, which can not be accessed by other containers.
+-----------------------------------------------------------------------------------------------------------------------
+>Checking the networks on the currrent host
+ docker network ls
+-----------------------------------------------------------------------------------------------------------------------
+
+-----------------------------------------------------------------------------------------------------------------------
+>Making a secure bridge network
+ docker network create <networkname>
+ (
+     This command creates a new, isolated, user-defined bridge network within Docker, 
+     allowing containers attached to it to communicate with each other using container 
+     names instead of IP addresses.
+     )
+ 
+ Check if the network is created
+ docker network ls
+------------------------------------------------------------------------------------------------------------------------     
+
+------------------------------------------------------------------------------------------------------------------------
+>Make a container on this newly created network 
+ docker run -d --name finance --network <newly-created-network-name> nginx:latest
+ (
+    This command **starts a new container named `finance`** in the background (`-d`), 
+    based on the `nginx:latest` image, and **attaches it to the specified Docker network**. 
+ )
+
+ Check if the container is created:
+ docker ps
+ 
+ Check the contaners details:
+ docker inspect finance
+ (
+    find the Network tab in the details and see if it is the smae network that you made!
+    Also the IPAddress will be on a different subnet, which will reject the access of
+    other containers to this container whch is on the secure network.
+ )
+
+ Check the ping through the login container
+ ping <IPAddress-of-finance-container>
+ [
+    the result will be null.
+ ]
+
+ [
+    This is how you make your container secure using the concept of networking
+ ]
+--------------------------------------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------------------------------------
